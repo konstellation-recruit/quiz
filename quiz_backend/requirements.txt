@@ -1,0 +1,12 @@
+argcomplete==1.12.2
+asgiref==3.4.1
+backports.zoneinfo==0.2.1
+certifi==2021.10.8
+Django==3.0
+django-ninja==0.16.1
+pipx==0.16.3
+pydantic==1.8.2
+pytz==2021.3
+sqlparse==0.4.2
+typing_extensions==4.0.1
+userpath==1.6.0
