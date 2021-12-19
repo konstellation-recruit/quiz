@@ -44,7 +44,9 @@ if RESET:
 
 
 users = [
-    ('beoms', 'beomsoo.kim@vegaxholdings.com'),
+    ('hoon', 'hoon@vegaxholdings.com'),
+    ('chang', 'chang@vegaxholdings.com'),
+    ('soo', 'soo@vegaxholdings.com'),
 ]
 
 questions = [
@@ -62,6 +64,8 @@ questions = [
     )
 ]
 
+answers = [(1, 1, 'x'), (2, 1, 'x'), (3, 1, 'o')]
+
 for name, email in users:
     u = User(name=name, email=email)
     u.save()
@@ -78,3 +82,14 @@ for number, question, correct_answer, explanation in questions:
     )
     q.save()
     print('added', q)
+del number, question, correct_answer, explanation
+
+
+for user, question, selection in answers:
+    a = Answer(
+        user=User.objects.get(id=user),
+        question=Question.objects.get(id=question),
+        selection=selection
+    )
+    a.save()
+    print('added', a)

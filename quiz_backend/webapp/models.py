@@ -7,9 +7,10 @@ class User(models.Model):
     name = models.CharField(max_length=512, unique=True)
     email = models.EmailField()
     score = models.IntegerField(default=0)
+    extra_score = models.IntegerField(default=0)
 
     def __repr__(self):
-        return repr_common(self, ['name', 'email', 'score',])
+        return repr_common(self, ['name', 'email', 'score', 'extra_score'])
 
     def __str__(self):
         return self.name
@@ -50,9 +51,10 @@ class Answer(models.Model):
 
     class Meta:
         unique_together = [['user', 'question']]
+        ordering = ['datetime']
 
     def __repr__(self):
         return repr_common(self, ['user', 'question', 'selection', 'datetime'])
 
     def __str__(self):
-        return repr(self)
+        return f"<user: {self.user}, question: {self.question.id}, selection: {self.selection}>"
