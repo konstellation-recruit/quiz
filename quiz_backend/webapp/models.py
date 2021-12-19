@@ -1,6 +1,6 @@
 from django.db import models
 
-from utils import repr_common
+from .utils import repr_common
 
 
 class User(models.Model):
@@ -25,6 +25,7 @@ class Question(models.Model):
     question = models.TextField(default='')
     correct_answer = models.CharField(max_length=1, choices=CORRECT_ANSWER_CHOICES)
     explanation = models.TextField(default='')
+    image_url = models.URLField(default='')
 
     class Meta:
         ordering = ['number']

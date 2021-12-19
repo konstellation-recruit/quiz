@@ -3,7 +3,7 @@
 import os
 import subprocess
 
-from utils import init_django
+from global_utils import init_django
 init_django()
 
 from webapp.models import User, Question, Answer
