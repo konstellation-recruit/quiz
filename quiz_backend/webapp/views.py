@@ -63,37 +63,3 @@ def select(request, select_data: SelectIn):
 
     except Exception as e:
         return {'success': False, 'error_msg': str(e)}
-
-
-def update_scores():
-    """
-    This function is dumb in a sense that it will repeat iterating the
-    same question assuming you will call this several time. But the computation
-    will be trivial enough and it gaurantess the sum is correct, so we will
-    stick with dum implementation.
-    """
-    new_user_scores = {}
-    new_user_extra_scores = {}
-
-    for question in Question.objects.all():
-        correct_answer = question.correct_answer
-
-        cur_extra = 63
-        for answer in question.answer_set.all():
-            user = answer.user
-
-            if answer.selection == correct_answer:
-                new_user_scores[user.id] =\
-                    new_user_scores.get(user.id, 0) + 1
-
-            # Give extra scores for users who submitted answer early regardless
-            # of the answer is correct or not
-            new_user_extra_scores[user.id] =\
-                new_user_extra_scores.get(user.id, 0) + cur_extra
-
-            cur_extra = max(cur_extra//2, 0)
-
-    for user in User.objects.all():
-        user.score = new_user_scores.get(user.id, 0)
-        user.extra_score = new_user_extra_scores.get(user.id, 0)
-        user.save()
