@@ -4,6 +4,8 @@ from ninja import Field, NinjaAPI, Schema, ModelSchema
 
 from .models import User, Question, Answer
 
+from django.shortcuts import render
+from django.http import JsonResponse, HttpResponse
 
 api = NinjaAPI(version="1.0.0")
 
@@ -42,6 +44,22 @@ class SelectIn(Schema):
     selection: str
 
 
+def index(
+    request
+    ) -> HttpResponse:
+    # return JsonResponse({})
+    return render(request, 'index.html', {})
+    # pass
+
+def quiz(
+    request
+    ) -> HttpResponse:
+    # return render(request, "{}")
+    # question = Question.objects.get(id=question_id)
+    return render(request, 'quiz.html', {})
+
+
+# 
 @api.post("/select/")
 def select(request, select_data: SelectIn):
     try:
