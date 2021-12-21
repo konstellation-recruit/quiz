@@ -1,6 +1,18 @@
+import { useState, useContext } from 'react';
 import { Text, VStack } from '@chakra-ui/react';
+import { WebSocketContext } from '../provider/WebSocketProvider';
 
 export default function UserRank() {
+    const [rank, setRank] = useState([]);
+
+    // const ws = useContext(WebSocketContext);
+
+    // ws.current.onmessage = (event) => {
+    //     console.log(event.data);
+
+    //     const data = JSON.parse(event.data);
+    // };
+
     return (
         <VStack borderRadius={20} boxShadow="dark-lg" p={10} maxH="340px" w="400px" bg="#252d4a">
             <Text>User Score</Text>
