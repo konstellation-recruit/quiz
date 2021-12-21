@@ -15,7 +15,7 @@ function App() {
 
     useEffect(() => {
         const userId = window.localStorage.getItem('user_id');
-        if (userId !== 'undefined') {
+        if (userId) {
             setSigned(true);
             dispatch(updateUserId(JSON.parse(userId)));
         }
@@ -31,7 +31,7 @@ function App() {
 
     const handleSubmit = async () => {
         console.log(name, email);
-        fetch(process.env.REACT_APP_REST_API_URL + '/api/v1/update_or_create_user/', {
+        fetch(process.env.REACT_APP_REST_API_URL + 'api/v1/update_or_create_user/', {
             method: 'POST',
             body: JSON.stringify({
                 name,

@@ -10,7 +10,7 @@ export default function UserStatus() {
     const questionId = useSelector((state) => state.questionId);
 
     const handleClickTrue = async () => {
-        fetch(process.env.REACT_APP_REST_API_URL + '/api/v1/select/', {
+        fetch(process.env.REACT_APP_REST_API_URL + 'api/v1/select/', {
             method: 'POST',
             body: JSON.stringify({
                 user_id: userId,
@@ -23,7 +23,7 @@ export default function UserStatus() {
     };
 
     const handleClickFalse = async () => {
-        fetch(process.env.REACT_APP_REST_API_URL + '/api/v1/select/', {
+        fetch(process.env.REACT_APP_REST_API_URL + 'api/v1/select/', {
             method: 'POST',
             body: JSON.stringify({
                 user_id: userId,

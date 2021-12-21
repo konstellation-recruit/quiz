@@ -4,3 +4,4 @@
 *venv*
 *dump*.*rdb*
 quiz_frontend/package.json
+quiz_frontend/.env
