@@ -1,8 +1,8 @@
 {
   "files": {
-    "main.js": "/quiz/static/js/main.4c0a08b0.js",
-    "index.html": "/quiz/index.html",
-    "main.4c0a08b0.js.map": "/quiz/static/js/main.4c0a08b0.js.map"
+    "main.js": "http://3.34.190.189/static/js/main.4c0a08b0.js",
+    "index.html": "http://3.34.190.189/index.html",
+    "main.4c0a08b0.js.map": "http://3.34.190.189/static/js/main.4c0a08b0.js.map"
   },
   "entrypoints": [
     "static/js/main.4c0a08b0.js"
