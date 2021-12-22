@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { Box, Text, VStack, Button, HStack } from '@chakra-ui/react';
 import { useSelector } from 'react-redux';
 import { WebSocketContext } from '../provider/WebSocketProvider';
@@ -7,29 +7,18 @@ import { useDispatch } from 'react-redux';
 import { updateQuestionId } from '../actions';
 
 export default function Question() {
-    const ws = useContext(WebSocketContext);
+    const content = useSelector((state) => state.questionData);
+    const id = useSelector((state) => state.questionId);
+    const status = useSelector((state) => state.status);
 
-    ws.current.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        console.log(data);
-
-        if (data.msg_type == 'create_question') {
-            setId(data.q_id);
-            setContent(data.question);
+    useEffect(() => {
+        if (status == 'question') {
             reset();
-            dispatch(updateQuestionId(data.q_id));
             start();
-        } else if (data.msg_type == 'show_answer') {
-            setContent(data.explanation);
-            dispatch(updateQuestionId(data.q_id));
         }
-    };
+    }, [status]);
 
-    const [content, setContent] = useState();
-    const [id, setId] = useState(0);
-    const dispatch = useDispatch();
-
-    const { time, start, pause, reset, status } = useTimer({
+    const { time, start, pause, reset } = useTimer({
         initialTime: 15 * 60,
         interval: 10,
         endTime: 0,
