@@ -11,7 +11,7 @@ export default ({ children }) => {
     const dispatch = useDispatch();
 
     if (!ws.current) {
-        ws.current = new WebSocket('ws://3.34.190.189:8000/ws/quiz/');
+        ws.current = new WebSocket(process.env.REACT_APP_WEB_SOCKET_URL);
         ws.current.onopen = () => {
             console.log('connected to ' + 'ws://3.34.190.189:8000/ws/quiz/');
         };
