@@ -34,7 +34,7 @@ export default function UserStatus() {
             JSON.stringify({
                 msg_type: 'submit',
                 user_id: userId,
-                name: 'bar',
+                name: userName,
                 q_id: questionId,
                 select: 'x',
             })
