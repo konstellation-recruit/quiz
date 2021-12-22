@@ -87,7 +87,7 @@ async def show_answer(ws, q_id):
 
 async def main():
     submit_time = 15 # sec
-    answer_time = 10
+    answer_time = 7
     async with websockets.connect("ws://localhost:8000/ws/quiz/") as ws:
         for q in questions:
             create_q_time = await create_question(ws, q)
