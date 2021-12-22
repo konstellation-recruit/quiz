@@ -5,6 +5,7 @@ import UserRank from './componets/UserRank';
 import UserStatus from './componets/UserStatus';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateUserId, updateUserName } from './actions';
+import MemeImage from './componets/MemeImage';
 
 function App() {
     const [signed, setSigned] = useState(false);
@@ -49,7 +50,10 @@ function App() {
                             <Question />
                             <UserStatus />
                         </Flex>
-                        <UserRank />
+                        <Flex p={10} gap={5} w="90%" justify="center" flexWrap="wrap">
+                            <MemeImage />
+                            <UserRank />
+                        </Flex>
                     </>
                 ) : (
                     <VStack p={5} w="300px" h="300px" bg="#252d4a" borderRadius={20} boxShadow="dark-lg" justify="center" align="center" spacing={6}>

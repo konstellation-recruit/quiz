@@ -9,17 +9,13 @@ export default function UserStatus() {
 
     const ws = useContext(WebSocketContext);
 
-    // ws.current.onmessage = (event) => {
-    //     const data = JSON.parse(event.data);
-    //     if (data.msg_type == 'show_answer') {
-    //         setTrueContent(data.select_o);
-    //         setFalseContent(data.select_x);
-    //     }
-    // };
-
+    const status = useSelector((state) => state.status);
     const userId = useSelector((state) => state.userId);
     const userName = useSelector((state) => state.userName);
     const questionId = useSelector((state) => state.questionId);
+
+    const trueNumber = useSelector((state) => state.trueNumber);
+    const falseNumber = useSelector((state) => state.falseNumber);
 
     const handleClickTrue = async () => {
         ws.current.send(
@@ -46,21 +42,29 @@ export default function UserStatus() {
     };
 
     return (
-        <HStack boxShadow="dark-lg" borderRadius={20} h="350px" w="400px" justify="space-evenly" bg="#252d4a">
+        <HStack boxShadow="dark-lg" borderRadius={20} minH="350px" w="400px" justify="space-evenly" bg="#252d4a">
             <VStack h="full" p={5} justify="center" spacing={5}>
-                <Button bg="#252d4a" fontSize="4xl" onClick={handleClickTrue}>
+                <Button bg="#252d4a" fontSize="4xl" onClick={status == 'question' ? handleClickTrue : () => {}}>
                     O
                 </Button>
                 <VStack>
-                    <Text>6</Text>
+                    <Text>
+                        {trueNumber?.map((value) => {
+                            return <Text>{value}</Text>;
+                        })}{' '}
+                    </Text>
                 </VStack>
             </VStack>
             <VStack h="full" p={5} justify="center" spacing={5}>
-                <Button bg="#252d4a" fontSize="4xl" onClick={handleClickFalse}>
+                <Button bg="#252d4a" fontSize="4xl" onClick={status == 'question' ? handleClickFalse : () => {}}>
                     X
                 </Button>
                 <VStack>
-                    <Text>4</Text>
+                    <Text>
+                        {falseNumber?.map((value) => {
+                            return <Text>{value}</Text>;
+                        })}{' '}
+                    </Text>
                 </VStack>
             </VStack>
         </HStack>

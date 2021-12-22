@@ -1,32 +1,27 @@
 import { useState, useContext } from 'react';
-import { Text, VStack } from '@chakra-ui/react';
+import { Text, HStack, VStack } from '@chakra-ui/react';
 import { WebSocketContext } from '../provider/WebSocketProvider';
+import { useSelector } from 'react-redux';
 
 export default function UserRank() {
-    const [rank, setRank] = useState([]);
+    const userScore = useSelector((state) => state.userScore);
 
-    const ws = useContext(WebSocketContext);
-
-    // ws.current.onmessage = (event) => {
-    //     console.log(event);
-    // };
+    const userArr = Object.entries(userScore);
 
     return (
-        <VStack borderRadius={20} boxShadow="dark-lg" p={10} maxH="340px" w="400px" bg="#252d4a">
+        <VStack borderRadius={20} boxShadow="dark-lg" p={10} minH="350px" w="400px" bg="#252d4a">
             <Text>User Score</Text>
-            <VStack flexWrap="wrap" w="full" maxH="250px">
-                <Text>1. Dongchang</Text>
-                <Text>2. Dongchang</Text>
-                <Text>3. Dongchang</Text>
-                <Text>4. Dongchang</Text>
-                <Text>5. Dongchang</Text>
-                <Text>6. Dongchang</Text>
-                <Text>7. Dongchang</Text>
-                <Text>8. Dongchang</Text>
-                <Text>9. Dongchang</Text>
-                <Text>10. Dongchang</Text>
-                <Text>11. Dongchang</Text>
-                <Text>12. Dongchang</Text>
+            <VStack w="full">
+                <Text>
+                    {userArr.map((value) => {
+                        return (
+                            <HStack justify="center">
+                                <Text>{value[1].name}</Text>
+                                <Text color="red">{value[1].score}</Text>
+                            </HStack>
+                        );
+                    })}{' '}
+                </Text>
             </VStack>
         </VStack>
     );

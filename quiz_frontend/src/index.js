@@ -7,11 +7,11 @@ import store from './store';
 
 ReactDOM.render(
     <React.StrictMode>
-        <WebSocketProvider>
-            <Provider store={store}>
+        <Provider store={store}>
+            <WebSocketProvider>
                 <App />
-            </Provider>
-        </WebSocketProvider>
+            </WebSocketProvider>
+        </Provider>
     </React.StrictMode>,
     document.getElementById('root')
 );
