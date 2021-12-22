@@ -133,19 +133,17 @@ async def create_question(ws, question):
     data = {"msg_type": "create_question", **question, "create_time": create_q_time}
     await ws.send(json.dumps(data))
     await ws.recv() # is this needed?
-    await asyncio.sleep(1)
     return create_q_time
 
 async def show_answer(ws, q_id):
     data = {"msg_type": "show_answer", "q_id": q_id}
     await ws.send(json.dumps(data))
     await ws.recv() # is this needed?
-    await asyncio.sleep(5)
 
 
 async def main():
-    submit_time = 16 # sec
-    answer_time = 10
+    submit_time = 15 # sec
+    answer_time = 7
     async with websockets.connect("ws://localhost:8000/ws/quiz/") as ws:
         for q in questions:
             create_q_time = await create_question(ws, q)
