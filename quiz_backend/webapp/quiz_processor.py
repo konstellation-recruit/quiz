@@ -1,6 +1,8 @@
-from channels.generic.websocket import AsyncWebsocketConsumer
-
 import json
+import datetime as dt
+from pprint import pprint
+
+from channels.generic.websocket import AsyncWebsocketConsumer
 
 
 class QuizProcessor(AsyncWebsocketConsumer):
@@ -10,14 +12,15 @@ class QuizProcessor(AsyncWebsocketConsumer):
         ) -> None:
 
         # print(self.scope['url_route'])
-        self._quiz_room = self.scope['url_route']['kwargs']
+        # self._quiz_room = self.scope['url_route']['kwargs']
         self._group = 'vegax'
 
         await self.channel_layer.group_add(
             self._group,
             self.channel_name
         )
-        
+        print('connect', self.channel_name)
+
         await self.accept()
 
 
@@ -25,6 +28,8 @@ class QuizProcessor(AsyncWebsocketConsumer):
         self,
         code
         ) -> None:
+
+        print('disconnect', self.channel_name)
 
         await self.channel_layer.group_discard(
             self._group,
@@ -38,7 +43,9 @@ class QuizProcessor(AsyncWebsocketConsumer):
         ) -> None:
 
         json_data = json.loads(text_data)
-        msg = json_data['msg']
+        # msg = json_data['msg']
+        msg = "now is " + str(dt.datetime.now())
+        print('receive')
 
         await self.channel_layer.group_send(
             self._group,
@@ -47,7 +54,7 @@ class QuizProcessor(AsyncWebsocketConsumer):
                 'msg': msg
             }
         )
-        
+
 
     async def chat_message(
         self,
