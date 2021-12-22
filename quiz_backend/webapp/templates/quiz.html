@@ -10,6 +10,8 @@
     <textarea id="chat-log" cols="100" rows="20"></textarea><br/>
     <input id="chat-message-input" type="text" size="100"/><br/>
     <input id="chat-message-submit" type="button" value="Send"/>
+    <input id="chat-message-submit-o" type="button" value="Choose O"/>
+    <input id="chat-message-submit-x" type="button" value="Choose X"/>
 </body>
 
 <script>
@@ -44,6 +46,21 @@
         }));
 
         messageInputDom.value = '';
+    };
+
+
+    document.querySelector('#chat-message-submit-o').onclick = (e) => {
+        chatSocket.send(JSON.stringify({
+            "q_id": 0, "user_id": 1, "select": "o"
+        }));
+
+    };
+
+
+    document.querySelector('#chat-message-submit-x').onclick = (e) => {
+        chatSocket.send(JSON.stringify({
+            "q_id": 0, "user_id": 1, "select": "x"
+        }));
     };
 </script>
 

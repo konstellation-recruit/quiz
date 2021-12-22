@@ -59,7 +59,7 @@ def quiz(
     return render(request, 'quiz.html', {})
 
 
-# 
+#
 @api.post("/select/")
 def select(request, select_data: SelectIn):
     try:

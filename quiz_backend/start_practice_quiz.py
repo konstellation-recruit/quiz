@@ -1,5 +1,6 @@
 import asyncio
 import json
+import time
 
 import websockets
 
@@ -29,23 +30,62 @@ questions = [
 ]
 
 
-async def hello():
-    async with websockets.connect("ws://localhost:8000/ws/quiz/") as websocket:
-        while True:
-            for q in questions:
-                await websocket.send(json.dumps({'msg': "Hello world!"}))
-                await websocket.recv() ## is this needed?
-                await asyncio.sleep(1)
+async def send_user_ox(ws, q_id):
+    await ws.send(json.dumps({
+        "type": "submit",
+        "user_id": 1,
+        "q_id": q_id,
+        "select": 'o' # select is must be 'o' or 'x'
+    }))
+    await ws.recv() # is this needed?
+    await asyncio.sleep(1)
 
-                # TODO
-                """
-                Repeat the below for each question
+    await ws.send(json.dumps({
+        "type": "submit",
+        "user_id": 1,
+        "q_id": q_id,
+        "select": 'x' # select is must be 'o' or 'x'
+    }))
+    await ws.recv() # is this needed?
+    await asyncio.sleep(1)
 
-                1. send the number, question, and image_url
-                2. on update on user answers
-                    - broadcast new states to all users (o/x counts and all)
-                3. 20 seconds after sending question, compute scores and (use `update_scores`)
-                  send the new scores to the users. also send the correct answer
-                """
+    await ws.send(json.dumps({
+        "type": "submit",
+        "user_id": "sdf@svn.com", # changed to mail
+        "name": "foo",
+        "q_id": q_id,
+        "select": 'o' # select is must be 'o' or 'x'
+    }))
+    await ws.recv() # is this needed?
+    await asyncio.sleep(1)
 
-asyncio.run(hello())
+    await ws.send(json.dumps({
+        "type": "submit",
+        "user_id": 2,
+        "q_id": q_id,
+        "select": 'o' # select is must be 'o' or 'x'
+    }))
+    await ws.recv() # is this needed?
+    await asyncio.sleep(1)
+
+
+async def send_question(ws, question):
+    create_q_time = time.time()
+    data = {"type": "question", **question, "create_time": create_q_time}
+    await ws.send(json.dumps(data))
+    await ws.recv() # is this needed?
+    await asyncio.sleep(1)
+    return create_q_time
+
+
+async def main():
+    submit_time = 10 # sec
+    async with websockets.connect("ws://localhost:8000/ws/quiz/") as ws:
+        for q in questions:
+            create_q_time = await send_question(ws, q)
+
+            while (time.time() - create_q_time <= submit_time):
+                await send_user_ox(ws, q["number"])
+
+
+asyncio.run(main())

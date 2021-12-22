@@ -28,15 +28,15 @@ def reset_db():
         path = os.path.join(migrations_path, fn)
         os.remove(path)
 
-    subprocess.run("python manage.py makemigrations".split())
-    subprocess.run("python manage.py migrate".split())
+    subprocess.run("python3 manage.py makemigrations".split())
+    subprocess.run("python3 manage.py migrate".split())
     print("\n*create a superuser with id: admin, pw: admin\n")
     os.environ.update({
         'DJANGO_SUPERUSER_USERNAME': 'admin',
         'DJANGO_SUPERUSER_PASSWORD': 'admin',
-        'DJANGO_SUPERUSER_EMAIL': 'a@a.com'}        )
+        'DJANGO_SUPERUSER_EMAIL': 'a@a.com'})
     subprocess.run(
-        "python manage.py createsuperuser --noinput".split())
+        "python3 manage.py createsuperuser --noinput".split())
 
 
 if RESET:
