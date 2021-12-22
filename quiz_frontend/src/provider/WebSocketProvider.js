@@ -11,16 +11,16 @@ export default ({ children }) => {
     const dispatch = useDispatch();
 
     if (!ws.current) {
-        ws.current = new WebSocket('ws://3.34.190.189:8000/ws/quiz/');
+        ws.current = new WebSocket('"ws://3.34.190.189:8000/ws/quiz/"');
         ws.current.onopen = () => {
-            console.log('connected to ' + 'ws://3.34.190.189:8000/ws/quiz/');
+            console.log('connected to ' + '"ws://3.34.190.189:8000/ws/quiz/"');
         };
         ws.current.onclose = (error) => {
-            console.log('disconnect from ' + 'ws://3.34.190.189:8000/ws/quiz/');
+            console.log('disconnect from ' + '"ws://3.34.190.189:8000/ws/quiz/"');
             console.log(error);
         };
         ws.current.onerror = (error) => {
-            console.log('connection error ' + 'ws://3.34.190.189:8000/ws/quiz/');
+            console.log('connection error ' + '"ws://3.34.190.189:8000/ws/quiz/"');
             console.log(error);
         };
 
