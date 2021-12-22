@@ -1,6 +1,3 @@
-import os
-
-
 def admin_default(
     cls, readonly=False, form=None, list_extra:list=None, list_exclude=(),
     readonly_fields=(), list_filter=(), ordering=(), raw_id_fields=()):
@@ -53,18 +50,37 @@ def repr_common(self, fields, custom:dict=None):
     return f'{class_name}({", ".join(args)})'
 
 
-# https://github.com/dancaron/Django-ORM/blob/master/main.py
-# Django ORM Standalone Python Template
-""" Here we'll import the parts of Django we need. It's recommended to leave
-these settings as is, and skip to START OF APPLICATION section below """
+def update_scores():
+    """
+    This function is dumb in a sense that it will repeat iterating the
+    same question assuming you will call this several time. But the computation
+    will be trivial enough and it gaurantess the sum is correct, so we will
+    stick with dum implementation.
+    """
+    from .models import User, Question
 
-def init_django():
-    # Avoid initializing twice
-    if os.environ.get("DJANGO_SETTINGS_MODULE"):
-        return
-    # Turn off bytecode generation
-    import sys
-    # sys.dont_write_bytecode = True  # NOTE: is this needed?
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "quiz_backend.settings")
-    import django
-    django.setup()
+    new_user_scores = {}
+    new_user_extra_scores = {}
+
+    for question in Question.objects.all():
+        correct_answer = question.correct_answer
+
+        cur_extra = 63
+        for answer in question.answer_set.all():
+            user = answer.user
+
+            if answer.selection == correct_answer:
+                new_user_scores[user.id] =\
+                    new_user_scores.get(user.id, 0) + 1
+
+            # Give extra scores for users who submitted answer early regardless
+            # of the answer is correct or not
+            new_user_extra_scores[user.id] =\
+                new_user_extra_scores.get(user.id, 0) + cur_extra
+
+            cur_extra = max(cur_extra//2, 0)
+
+    for user in User.objects.all():
+        user.score = new_user_scores.get(user.id, 0)
+        user.extra_score = new_user_extra_scores.get(user.id, 0)
+        user.save()

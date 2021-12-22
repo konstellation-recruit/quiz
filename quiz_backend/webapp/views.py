@@ -1,6 +1,6 @@
 import datetime as dt
 
-from ninja import Field, NinjaAPI, Schema
+from ninja import Field, NinjaAPI, Schema, ModelSchema
 
 from .models import User, Question, Answer
 
@@ -8,6 +8,34 @@ from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
 
 api = NinjaAPI(version="1.0.0")
+
+
+class UpdateOrCreateUserIn(Schema):
+    name: str
+    email: str
+
+
+class UserOut(ModelSchema):
+    # TODO define serializer
+    class Config:
+        model = User
+        model_fields = ['id', 'name', 'email', 'score']
+        # json_encoders = { dt.datetime: lambda a: str(a) }
+
+
+@api.post("/update_or_create_user/", response=UserOut)
+def update_or_create_user(request, data: UpdateOrCreateUserIn):
+    user, _ = User.objects.update_or_create(
+        email=data.email,
+        defaults={'name': data.name}
+    )
+
+    return user
+
+
+@api.get('/get_user/{user_id}', response=UserOut)
+def get_user(request, user_id: int):
+    return User.objects.get(id=user_id)
 
 
 class SelectIn(Schema):
@@ -31,7 +59,7 @@ def quiz(
     return render(request, 'quiz.html', {})
 
 
-# 
+#
 @api.post("/select/")
 def select(request, select_data: SelectIn):
     try:

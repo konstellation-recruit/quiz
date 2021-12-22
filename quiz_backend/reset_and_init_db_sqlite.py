@@ -3,7 +3,7 @@
 import os
 import subprocess
 
-from utils import init_django
+from global_utils import init_django
 init_django()
 
 from webapp.models import User, Question, Answer
@@ -28,15 +28,15 @@ def reset_db():
         path = os.path.join(migrations_path, fn)
         os.remove(path)
 
-    subprocess.run("python manage.py makemigrations".split())
-    subprocess.run("python manage.py migrate".split())
+    subprocess.run("python3 manage.py makemigrations".split())
+    subprocess.run("python3 manage.py migrate".split())
     print("\n*create a superuser with id: admin, pw: admin\n")
     os.environ.update({
         'DJANGO_SUPERUSER_USERNAME': 'admin',
         'DJANGO_SUPERUSER_PASSWORD': 'admin',
-        'DJANGO_SUPERUSER_EMAIL': 'a@a.com'}        )
+        'DJANGO_SUPERUSER_EMAIL': 'a@a.com'})
     subprocess.run(
-        "python manage.py createsuperuser --noinput".split())
+        "python3 manage.py createsuperuser --noinput".split())
 
 
 if RESET:
@@ -44,7 +44,9 @@ if RESET:
 
 
 users = [
-    ('beoms', 'beomsoo.kim@vegaxholdings.com'),
+    ('hoon', 'hoon@vegaxholdings.com'),
+    ('chang', 'chang@vegaxholdings.com'),
+    ('soo', 'soo@vegaxholdings.com'),
 ]
 
 questions = [
@@ -62,6 +64,8 @@ questions = [
     )
 ]
 
+answers = [(1, 1, 'x'), (2, 1, 'x'), (3, 1, 'o')]
+
 for name, email in users:
     u = User(name=name, email=email)
     u.save()
@@ -78,3 +82,14 @@ for number, question, correct_answer, explanation in questions:
     )
     q.save()
     print('added', q)
+del number, question, correct_answer, explanation
+
+
+for user, question, selection in answers:
+    a = Answer(
+        user=User.objects.get(id=user),
+        question=Question.objects.get(id=question),
+        selection=selection
+    )
+    a.save()
+    print('added', a)

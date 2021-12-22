@@ -8,8 +8,8 @@ from .views import index
 
 
 urlpatterns = [
-    path('v1/', api.urls),
-    
+    path('api/v1/', api.urls),
+
     url(r'^$', index, name='index'),
     url(r'^quiz/', quiz, name='quiz'),
 ]
