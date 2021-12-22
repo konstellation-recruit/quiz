@@ -17,7 +17,7 @@ function App() {
         const userId = window.localStorage.getItem('user_id');
         if (userId) {
             setSigned(true);
-            dispatch(updateUserId(JSON.parse(userId)));
+            dispatch(updateUserId(userId));
         }
     }, []);
 
@@ -31,18 +31,9 @@ function App() {
 
     const handleSubmit = async () => {
         console.log(name, email);
-        fetch(process.env.REACT_APP_REST_API_URL + 'api/v1/update_or_create_user/', {
-            method: 'POST',
-            body: JSON.stringify({
-                name,
-                email,
-            }),
-        })
-            .then((response) => response.json())
-            .then((response) => {
-                window.localStorage.setItem('user_id', JSON.stringify(response.id));
-                setSigned(true);
-            });
+
+        window.localStorage.setItem('user_id', email);
+        setSigned(true);
     };
 
     return (
