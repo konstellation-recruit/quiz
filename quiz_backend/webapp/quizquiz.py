@@ -14,7 +14,8 @@ logger = get_logger()
 
 
 class Quiz:
-    def __init__(self, question, correct_answer, explanation, image_url, create_time):
+    def __init__(self, q_id, question, correct_answer, explanation, image_url, create_time):
+        self.q_id = q_id
         self.question = question
         self.correct_answer = correct_answer
         self.explanation = explanation
@@ -24,8 +25,8 @@ class Quiz:
         # k : user_id, v: select('o' or 'x')
         self.users = OrderedDict()
 
-    def update_user(self, user_id, select, submit_time):
-        self.users[user_id] = {"select": select, "submit_time": submit_time}
+    def update_user(self, user_id, name, select, submit_time):
+        self.users[user_id] = {"select": select, "name": name, "submit_time": submit_time}
 
     def calculate_scores(self):
         sorted_times = OrderedDict(sorted(
@@ -39,13 +40,41 @@ class Quiz:
             self.users[user_id]["extra_score"] = cur_extra
             cur_extra = max(cur_extra // 2, 0)
 
+    def get_quiz(self):
+        quiz_data = {
+            "msg_type": "create_question",
+            "q_id": self.q_id,
+            "question": self.question,
+            "image_url": self.image_url
+        }
+        return quiz_data
+
     def show_answer(self):
         """show answer and explanation
 
         Returns:
             user ox list
         """
-        pass
+        select_o, select_x = [], []
+        print(list(self.users.values()))
+
+        for user in self.users.values():
+            if user["select"] == "o":
+                select_o.append(user["name"])
+            elif user["select"] == "x":
+                select_x.append(user["name"])
+
+        quiz_data = {
+            "msg_type": "show_answer",
+            "q_id": self.q_id,
+            "correct_answer": self.correct_answer,
+            "explanation": self.explanation,
+            "question": self.question,
+            "image_url": self.image_url,
+            "select_o": select_o,
+            "select_x": select_x,
+        }
+        return quiz_data
 
 
 class QuizQuizConsumer(AsyncWebsocketConsumer):
@@ -76,57 +105,62 @@ class QuizQuizConsumer(AsyncWebsocketConsumer):
     async def receive_submit(self, data) -> None:
         submit_time = time.time()
         user_id = data["user_id"]
+        name = data["name"]
         q_id = data["q_id"]
         select = data["select"]
 
         quiz = self.quizs[q_id]
-        quiz.update_user(user_id, select, submit_time)
+        quiz.update_user(user_id, name, select, submit_time)
 
-        counter = dict(Counter([
+        data = dict(Counter([
             x["select"] for x in quiz.users.values()
         ]))
 
-        msg = f"{dt.datetime.now()} msg:{data} {counter}"
-        logger.info(f"Broadcast msg:{msg}")
+        logger.info(f"OX Submit data:{data}")
 
         await self.channel_layer.group_send(
             self._group,
-            {'type': 'chat_message', 'msg': msg}
+            {'type': 'chat_message', 'data': data}
         )
 
     async def create_question(self, question):
         q_id = question.pop("number")
-
-        if q_id != 1:
-            self.quizs[self.cur_q_id].calculate_scores()
-            logger.info(f"Dump Q : {self.quizs}")
-            # with open(f"dump_quiz.pkl", 'w') as f:
-            #     pickle.dump(self.quizs, f)
-
         if q_id in self.quizs:
             raise ValueError()
 
         self.cur_q_id = q_id
-        self.quizs[q_id] = Quiz(**question)
+        self.quizs[q_id] = Quiz(q_id, **question)
 
-        msg = f"Create q_id:{q_id} Q:{question}"
-        logger.info(msg)
+        quiz_data = self.quizs[q_id].get_quiz()
+
+        logger.info(f"Create Q : {quiz_data}")
         await self.channel_layer.group_send(
             self._group,
-            {'type': 'chat_message', 'msg': msg}
+            {'type': 'chat_message', 'data': quiz_data}
+        )
+
+    async def show_answer(self, q_id):
+        self.quizs[q_id].calculate_scores()
+        answer_data = self.quizs[q_id].show_answer()
+        logger.info(f"Show A : {answer_data}")
+        await self.channel_layer.group_send(
+            self._group,
+            {'type': 'chat_message', 'data': answer_data}
         )
 
     async def receive(self, text_data) -> None:
         data = json.loads(text_data)
         logger.info(f"Receive data:{data}")
-        type_ = data.pop("type")
+        msg_type = data.pop("msg_type")
 
-        if type_ == "question":
+        if msg_type == "create_question":
             await self.create_question(data)
-        elif type_ == "submit":
+        elif msg_type == "show_answer":
+            await self.show_answer(data["q_id"])
+        elif msg_type == "submit":
             await self.receive_submit(data)
+        else:
+            raise ValueError(f"Check msg_type {msg_type}")
 
     async def chat_message(self, event) -> None:
-        await self.send(text_data=json.dumps({
-            'msg': event['msg']
-        }))
+        await self.send(text_data=json.dumps(event['data']))
