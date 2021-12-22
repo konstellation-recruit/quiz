@@ -1,38 +1,48 @@
 import { HStack, VStack, Text, Button } from '@chakra-ui/react';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { WebSocketContext } from '../provider/WebSocketProvider';
 import { useSelector } from 'react-redux';
 
 export default function UserStatus() {
-    // const ws = useContext(WebSocketContext);
+    const [trueContent, setTrueContent] = useState();
+    const [falseContent, setFalseContent] = useState();
+
+    const ws = useContext(WebSocketContext);
+
+    // ws.current.onmessage = (event) => {
+    //     const data = JSON.parse(event.data);
+    //     if (data.msg_type == 'show_answer') {
+    //         setTrueContent(data.select_o);
+    //         setFalseContent(data.select_x);
+    //     }
+    // };
 
     const userId = useSelector((state) => state.userId);
+    const userName = useSelector((state) => state.userName);
     const questionId = useSelector((state) => state.questionId);
 
     const handleClickTrue = async () => {
-        fetch(process.env.REACT_APP_REST_API_URL + 'api/v1/select/', {
-            method: 'POST',
-            body: JSON.stringify({
+        ws.current.send(
+            JSON.stringify({
+                msg_type: 'submit',
                 user_id: userId,
-                question_id: questionId,
-                selection: 'o',
-            }),
-        })
-            .then((response) => response.json())
-            .then((response) => console.log(response));
+                name: userName,
+                q_id: questionId,
+                select: 'o',
+            })
+        );
     };
 
     const handleClickFalse = async () => {
-        fetch(process.env.REACT_APP_REST_API_URL + 'api/v1/select/', {
-            method: 'POST',
-            body: JSON.stringify({
+        await ws.current.send(
+            JSON.stringify({
+                msg_type: 'submit',
                 user_id: userId,
-                question_id: questionId,
-                selection: 'x',
-            }),
-        })
-            .then((response) => response.json())
-            .then((response) => console.log(response));
+                name: 'bar',
+                q_id: questionId,
+                select: 'x',
+            })
+        );
     };
 
     return (

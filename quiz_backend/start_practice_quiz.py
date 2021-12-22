@@ -88,15 +88,19 @@ async def show_answer(ws, q_id):
 
 
 async def main():
-    submit_time = 10 # sec
+    submit_time = 16 # sec
+    answer_time = 10
     async with websockets.connect("ws://localhost:8000/ws/quiz/") as ws:
         for q in questions:
             create_q_time = await create_question(ws, q)
 
+            await asyncio.sleep(submit_time)
             # while (time.time() - create_q_time <= submit_time):
-            await send_user_ox(ws, q["number"])
+                
+            # await send_user_ox(ws, q["number"])
 
             await show_answer(ws, q["number"])
+            await asyncio.sleep(answer_time)
 
 
 asyncio.run(main())

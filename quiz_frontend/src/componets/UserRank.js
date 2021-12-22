@@ -5,12 +5,10 @@ import { WebSocketContext } from '../provider/WebSocketProvider';
 export default function UserRank() {
     const [rank, setRank] = useState([]);
 
-    // const ws = useContext(WebSocketContext);
+    const ws = useContext(WebSocketContext);
 
     // ws.current.onmessage = (event) => {
-    //     console.log(event.data);
-
-    //     const data = JSON.parse(event.data);
+    //     console.log(event);
     // };
 
     return (

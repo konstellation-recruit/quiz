@@ -77,10 +77,21 @@ class Quiz:
         return quiz_data
 
 
+quizs = {}
+cum_scores = {}
+
+def update_cum_scores(new_scores):
+    for key in new_scores:
+        if key not in cum_scores:
+            cum_scores[key] = new_scores[key]
+        else:
+            cum_scores[key]['score'] += new_scores[key]['score']
+            cum_scores[key]['extra_score'] += new_scores[key]['extra_score']
+
 class QuizQuizConsumer(AsyncWebsocketConsumer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.quizs = {}
+        # self.quizs = {}
         self.cur_q_id = 1
 
     async def connect(self) -> None:
@@ -109,29 +120,37 @@ class QuizQuizConsumer(AsyncWebsocketConsumer):
         q_id = data["q_id"]
         select = data["select"]
 
-        quiz = self.quizs[q_id]
-        quiz.update_user(user_id, name, select, submit_time)
+        print('quiz accessed', q_id, quizs, 'quizs id', id(quizs))
+        # if int(q_id) in self.quizs:
+        if int(q_id) in quizs:
+            # quiz = self.quizs[int(q_id)]
+            quiz = quizs[int(q_id)]
+            quiz.update_user(user_id, name, select, submit_time)
 
-        data = dict(Counter([
-            x["select"] for x in quiz.users.values()
-        ]))
+            cnt = dict(Counter([
+                x["select"] for x in quiz.users.values()
+            ]))
+            data = {
+                'msg_type': 'receive_submit', 'count': cnt
+            }
 
-        logger.info(f"OX Submit data:{data}")
+            logger.info(f"OX Submit data:{data}")
 
-        await self.channel_layer.group_send(
-            self._group,
-            {'type': 'chat_message', 'data': data}
-        )
+            await self.channel_layer.group_send(
+                self._group,
+                {'type': 'chat_message', 'data': data}
+            )
 
     async def create_question(self, question):
         q_id = question.pop("number")
-        if q_id in self.quizs:
-            raise ValueError()
+        # if q_id in quizs:
+        #     raise ValueError()
 
         self.cur_q_id = q_id
-        self.quizs[q_id] = Quiz(q_id, **question)
+        quizs[int(q_id)] = Quiz(q_id, **question)
+        print('quiz created', quizs, 'self.quiz id', id(quizs))
 
-        quiz_data = self.quizs[q_id].get_quiz()
+        quiz_data = quizs[q_id].get_quiz()
 
         logger.info(f"Create Q : {quiz_data}")
         await self.channel_layer.group_send(
@@ -140,19 +159,22 @@ class QuizQuizConsumer(AsyncWebsocketConsumer):
         )
 
     async def show_answer(self, q_id):
-        self.quizs[q_id].calculate_scores()
-        answer_data = self.quizs[q_id].show_answer()
+        quizs[q_id].calculate_scores()
+        answer_data = quizs[q_id].show_answer()
+        cur_scores = quizs[q_id].users
+        update_cum_scores(cur_scores)
+        data = {'answer_data': answer_data, 'cur_scores': cur_scores, 'cum_scores': cum_scores}
         logger.info(f"Show A : {answer_data}")
         await self.channel_layer.group_send(
             self._group,
-            {'type': 'chat_message', 'data': answer_data}
+            {'type': 'chat_message', 'data': data}
         )
 
     async def receive(self, text_data) -> None:
         data = json.loads(text_data)
         logger.info(f"Receive data:{data}")
         msg_type = data.pop("msg_type")
-
+        print('got msg', msg_type)
         if msg_type == "create_question":
             await self.create_question(data)
         elif msg_type == "show_answer":

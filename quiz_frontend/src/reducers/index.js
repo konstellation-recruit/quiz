@@ -1,4 +1,4 @@
-import { UPDATE_QUESTION_ID, UPDATE_USER_ID } from '../constant/action-types';
+import { UPDATE_QUESTION_ID, UPDATE_USER_ID, UPDATE_USER_NAME } from '../constant/action-types';
 
 const initialState = {
     questionId: 1,
@@ -8,6 +8,8 @@ const rootReducer = (state = initialState, action) => {
     switch (action.type) {
         case UPDATE_USER_ID:
             return { ...state, userId: action.userId };
+        case UPDATE_USER_NAME:
+            return { ...state, userName: action.userName };
         case UPDATE_QUESTION_ID:
             return { ...state, questionId: action.questionId };
         default:

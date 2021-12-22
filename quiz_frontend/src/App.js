@@ -4,7 +4,7 @@ import Question from './componets/Question';
 import UserRank from './componets/UserRank';
 import UserStatus from './componets/UserStatus';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateUserId } from './actions';
+import { updateUserId, updateUserName } from './actions';
 
 function App() {
     const [signed, setSigned] = useState(false);
@@ -15,9 +15,11 @@ function App() {
 
     useEffect(() => {
         const userId = window.localStorage.getItem('user_id');
+        const userName = window.localStorage.getItem('user_name');
         if (userId) {
             setSigned(true);
             dispatch(updateUserId(userId));
+            dispatch(updateUserName(userName));
         }
     }, []);
 
@@ -30,9 +32,11 @@ function App() {
     };
 
     const handleSubmit = async () => {
-        console.log(name, email);
-
+        // TODO: user 생성을 ws으로 보내는 것
         window.localStorage.setItem('user_id', email);
+        window.localStorage.setItem('user_name', name);
+        dispatch(updateUserName(name));
+        dispatch(updateUserId(email));
         setSigned(true);
     };
 
