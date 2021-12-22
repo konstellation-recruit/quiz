@@ -1,7 +1,0 @@
-*__pycache__*
-**/migrations
-**/*.*sqlite3*
-*venv*
-*dump*.*rdb*
-quiz_frontend/package.json
-quiz_frontend/.env
